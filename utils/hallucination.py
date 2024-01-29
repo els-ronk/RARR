@@ -39,10 +39,10 @@ def run_evidence_hallucination(
                 stop=["\n", "\n\n"],
             )
             break
-        except openai.error.OpenAIError as exception:
+        except openai.OpenAIError as exception:
             print(f"{exception}. Retrying...")
             time.sleep(2)
 
-    hallucinated_evidence = response.choices[0].text.strip()
+    hallucinated_evidence = response.choices[0].message.content.strip()
     output = {"text": hallucinated_evidence, "query": query}
     return output

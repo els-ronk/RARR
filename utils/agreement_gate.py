@@ -80,10 +80,10 @@ def run_agreement_gate(
                     logit_bias={"50256": -100},  # Don't allow <|endoftext|> to be generated
                 )
             break
-        except openai.error.OpenAIError as exception:
+        except openai.OpenAIError as exception:
             print(f"{exception}. Retrying...")
             time.sleep(2)
 
-    is_open, reason, decision = parse_api_response(response.choices[0].text)
+    is_open, reason, decision = parse_api_response(response.choices[0].message.content)
     gate = {"is_open": is_open, "reason": reason, "decision": decision}
     return gate

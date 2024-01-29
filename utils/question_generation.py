@@ -74,11 +74,12 @@ def run_rarr_question_generation(
                     max_tokens=256,
                 )
                 cur_round_questions = parse_api_response(
-                    response.choices[0].text.strip()
+                    # response.choices[0].text.strip()
+                    response.choices[0].message.content.strip()
                 )
                 questions.update(cur_round_questions)
                 break
-            except openai.error.OpenAIError as exception:
+            except openai.OpenAIError as exception:
                 print(f"{exception}. Retrying...")
                 time.sleep(1)
 

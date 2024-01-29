@@ -69,11 +69,11 @@ def run_rarr_editor(
                     stop=["\n\n"],
             )
             break
-        except openai.error.OpenAIError as exception:
+        except openai.OpenAIError as exception:
             print(f"{exception}. Retrying...")
             time.sleep(2)
 
-    edited_claim = parse_api_response(response.choices[0].text)
+    edited_claim = parse_api_response(response.choices[0].message.content)
     # If there was an error in GPT-3 generation, return the claim.
     if not edited_claim:
         edited_claim = claim
