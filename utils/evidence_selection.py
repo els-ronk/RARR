@@ -9,7 +9,7 @@ PASSAGE_RANKER = CrossEncoder(
     max_length=512,
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
 )
-
+ 
 
 def compute_score_matrix(
     questions: List[str], evidences: List[str]

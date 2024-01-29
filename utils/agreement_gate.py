@@ -4,6 +4,7 @@ import time
 from typing import Any, Dict, Tuple
 
 import openai
+from openai import OpenAI
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -58,6 +59,7 @@ def run_agreement_gate(
     Returns:
         gate: A dictionary with the status of the gate and reasoning for decision.
     """
+    client = OpenAI()
     if context:
         gpt3_input = prompt.format(
             context=context, claim=claim, query=query, evidence=evidence
@@ -67,14 +69,16 @@ def run_agreement_gate(
 
     for _ in range(num_retries):
         try:
-            response = openai.Completion.create(
-                model=model,
-                prompt=gpt3_input,
-                temperature=0.0,
-                max_tokens=256,
-                stop=["\n\n"],
-                logit_bias={"50256": -100},  # Don't allow <|endoftext|> to be generated
-            )
+            response = client.chat.completions.create(
+                    model=model,
+                    messages=[
+                        {"role": "user", "content": gpt3_input}
+                    ],
+                    temperature=0.0,
+                    max_tokens=256,
+                    stop=["\n\n"],
+                    logit_bias={"50256": -100},  # Don't allow <|endoftext|> to be generated
+                )
             break
         except openai.error.OpenAIError as exception:
             print(f"{exception}. Retrying...")

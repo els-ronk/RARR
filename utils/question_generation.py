@@ -4,6 +4,7 @@ import time
 from typing import List
 
 import openai
+from openai import OpenAI
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -54,6 +55,7 @@ def run_rarr_question_generation(
     Returns:
         questions: A list of questions.
     """
+    client = OpenAI()
     if context:
         gpt3_input = prompt.format(context=context, claim=claim).strip()
     else:
@@ -63,9 +65,11 @@ def run_rarr_question_generation(
     for _ in range(num_rounds):
         for _ in range(num_retries):
             try:
-                response = openai.Completion.create(
+                response = client.chat.completions.create(
                     model=model,
-                    prompt=gpt3_input,
+                    messages=[
+                        {"role": "user", "content": gpt3_input}
+                    ],
                     temperature=temperature,
                     max_tokens=256,
                 )
