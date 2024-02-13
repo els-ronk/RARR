@@ -11,6 +11,7 @@ from typing import Any, Dict
 import jsonlines
 import Levenshtein
 import tqdm
+import time
 
 from prompts import hallucination_prompts, rarr_prompts
 from utils import (
@@ -72,9 +73,16 @@ def run_editor_one_instance(
             results, agreement gate information, and each revision step done on the
             claim.
     """
+    # Timing variables
+    time_question_generation = 0
+    time_evidence_retrieval = 0
+    time_agreement_gate = 0
+    time_editing = 0
+
     original_claim = claim
     agreement_gates = []
 
+    start_time = time.time()
     # Generate questions for the claim
     questions = question_generation.run_rarr_question_generation(
         claim=claim,
@@ -86,6 +94,7 @@ def run_editor_one_instance(
         temperature=temperature_qgen,
         num_rounds=num_rounds_qgen,
     )
+    time_question_generation = time.time() - start_time
 
     # Run search on generated question for the claim
     if hallucinate_evidence:
@@ -112,6 +121,8 @@ def run_editor_one_instance(
             for query in questions
         ]
 
+    time_evidence_retrieval = time.time() - time_question_generation - start_time
+
     # Flatten the evidences per question into a single list.
     used_evidences = [
         e
@@ -133,6 +144,7 @@ def run_editor_one_instance(
             if context
             else rarr_prompts.AGREEMENT_GATE_PROMPT,
         )
+        time_agreement_gate = time.time() - time_evidence_retrieval - time_question_generation - start_time
         agreement_gates.append(gate)
 
         # Run the editor gate if the agreement gate is open
@@ -152,6 +164,7 @@ def run_editor_one_instance(
             if Levenshtein.distance(claim, edited_claim) / len(claim) <= max_edit_ratio:
                 claim = edited_claim
 
+        time_editing = time.time() - time_agreement_gate - time_evidence_retrieval - time_question_generation - start_time
         revision_steps.append({"text": claim})
 
     result = {
@@ -171,6 +184,13 @@ def run_editor_one_instance(
     }
     selected_evidences = evidence_selection.select_evidences(result)
     result["selected_evidences"] = selected_evidences
+
+    print(f"Question Generation Time: {time_question_generation:.2f} seconds")
+    print(f"Evidence Retrieval Time: {time_evidence_retrieval:.2f} seconds")
+    print(f"Agreement Gate Time: {time_agreement_gate:.2f} seconds")
+    print(f"Editing Time: {time_editing:.2f} seconds")
+    print(f"Total Time: {time.time() - start_time:.2f} seconds")
+    
     return result
 
 
