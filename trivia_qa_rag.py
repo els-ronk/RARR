@@ -125,6 +125,7 @@ def main():
     Evaluation:
         Measure the NarrativeQA accuracy/f1/precision/recall/BLEU/BERTScore before and after RARR.
         Compare the accuracy/etc. and preservation of the 'after' results for RAGR2 and RARR.
+        Experiment with different RAG pipelines (e.g., different embeddings, splitters, retrievers, hyperparams) and compare their results using Ragas.
         TODO: Think of additional experiments.
     """
     
