@@ -1,6 +1,4 @@
 __pycache__/
 .vscode/
 archive/
-chroma/
-trivia_qa/
-triviaqa_vecdb/
+vecdb_versions/
