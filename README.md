@@ -1,7 +1,8 @@
-# RARR: Researching and Revising What Language Models Say, Using Language Models
+# RAGR2: Correcting LLMs using Retrieval Augmented Generation-based Research and Revision
 
-Welcome! This repository contains a public implementation for [RARR: Researching and Revising What Language Models Say, Using Language Models](https://arxiv.org/abs/2210.08726) from CMU, Google Research, and UC Irvine. RARR addresses the attribution and factuality problems in large language models (LLMs) in a post-hoc manner by retrieving evidence to attribute the LLM's output and editing the output to be facutally consistent with the evidence.
-RARR uses large language models themselves to do the editing.
+Welcome! This repository contains the implementation for the RAGR2 framework, from the University of Amsterdam and Elsevier. RAGR2 addresses factual hallucinations that occur in RAG enhanced LLMs during inference. The framework takes generated text (summaries, chat transcripts, answers for QA, classifications, etc.), retrieves relevant evidence and edits the original passage to be factually consistent with the evidence, while preserving the original intent and structure.
+
+RAGR2 uses LLMs to perform query generation, agreement detection, and revision.
 
 The techniques in RARR are quite general so if you are working on ***any*** task using LLMs to edit the output of LLMs (*e.g.*, removing bias, fixing toxing outputs, etc.), you may find this repository a good starting point.
 
