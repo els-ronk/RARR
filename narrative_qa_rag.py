@@ -49,15 +49,36 @@ def create_vecdb():
     vecdb.add_texts(ids=ids, texts=texts, metadatas=metadatas)
     print("Documents added.")
 
+
+def retrieve_evidence(query, num_snippets=5):
+    miniLM_ef = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
+    vecdb = Chroma(persist_directory=PERSIST_PATH, 
+                   embedding_function=miniLM_ef,
+                   collection_name='narrative_qa_collection'
+                )
+    # Embed the query
+    query_vec = miniLM_ef.embed([query])[0]  # Assuming the embedding function expects a list and returns a list of vectors
+
+    # Retrieve most similar documents from the vector store
+    results = vecdb.nearest_neighbors(query_vec, n=num_snippets)  # Adjust the function call as per the actual API
+
+    # Format the results
+    evidence_list = []
+    for result in results:
+        evidence_dict = {
+            "query": query,
+            "passage": result['text'],  # Assuming 'text' key in result contains the passage
+            "rel_score": result['score']  # Assuming 'score' key in result contains the relevance score
+        }
+        evidence_list.append(evidence_dict)
+
+    return evidence_list
+
+
 def generate_queries():
     queries = []
     # Complete implementation
     return queries
-
-def retrieve_evidence(query, n=1):
-    evidence = []
-    
-    return evidence
 
 
 def main():
